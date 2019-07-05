@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<siardArchive xsi:schemaLocation="http://www.bar.admin.ch/xmlns/siard/2/metadata.xsd metadata.xsd" version="2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.bar.admin.ch/xmlns/siard/2/metadata.xsd">
+    <schemas>
+        <schema>
+            <name>schemaName</name>
+            <folder>table0</folder>
+            <tables>
+                <table>
+                    <name>object</name>
+                    <folder>table0</folder>
+                    <columns>
+                        <column>
+                            <name>fileObject</name>
+                            <lobFolder>schema0\table0\lob0</lobFolder>
+                        </column>
+                    </columns>
+                </table>
+            </tables>
+        </schema>
+    </schemas>
+</siardArchive>
