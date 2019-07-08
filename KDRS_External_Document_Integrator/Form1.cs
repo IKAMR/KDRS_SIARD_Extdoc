@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
@@ -23,6 +24,11 @@ namespace KDRS_External_Document_Integrator
         public static string outPath = string.Empty;
 
         public int totalFileCount;
+        public int fileCounter;
+
+        public bool isZipped;
+
+        public string zipJarPath = string.Empty;
 
         XmlWriter xmlWriter;
 
@@ -67,6 +73,8 @@ namespace KDRS_External_Document_Integrator
             inFile = txtInFile.Text;
             outPath = txtOutFile.Text;
 
+            zipJarPath = txtInFile.Text;
+
             Console.WriteLine("outPath: " + outPath);
 
             if (outPath != string.Empty)
@@ -83,7 +91,19 @@ namespace KDRS_External_Document_Integrator
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            textBox1.Text = "Files copied: " + e.UserState.ToString() + " of total: " + totalFileCount;
+            if (e.ProgressPercentage == 1)
+            {
+                textBox1.Text = "Files copied: " + e.UserState.ToString() + " of total: " + totalFileCount;
+            }
+            else if (e.ProgressPercentage == 2)
+            {
+                textBox1.AppendText("Writing xml file");
+            }
+            else if (e.ProgressPercentage == 3)
+            {
+                textBox1.Text = "Writing xml file\r\n" +
+                    "File info written: " + e.UserState.ToString() + " of total: " + totalFileCount;
+            }
         }
         //--------------------------------------------------------------------------------
 
@@ -107,7 +127,13 @@ namespace KDRS_External_Document_Integrator
             try
             {
                 DoTransform();
-            }catch (Exception ex)
+
+            }
+            catch (IOException)
+            {
+                throw new Exception("Files already exits in target folder");
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -127,10 +153,19 @@ namespace KDRS_External_Document_Integrator
 
             int counter = 0;
 
+            DirectoryInfo sourceFolder = new DirectoryInfo(docFolder);
+
+            int fileCount = 0;
+            FileInfo[] clobFiles = sourceFolder.GetFiles("*", SearchOption.AllDirectories);
+
+            totalFileCount = clobFiles.Count();
+
+            fileCounter = 0;
             DirectoryCopy(docFolder, lobFolderPath);
 
             DirectoryInfo targetDir = new DirectoryInfo(lobFolderPath);
-            Console.WriteLine("Targetdir: "+ targetDir.Name);
+
+            Console.WriteLine("Targetdir: " + targetDir.Name);
             if (!targetDir.Exists)
             {
                 throw new DirectoryNotFoundException(
@@ -146,19 +181,15 @@ namespace KDRS_External_Document_Integrator
 
             CreateTableXML(tableFolderPath);
 
-            int fileCount = 0;
-            FileInfo[] clobFiles = targetDir.GetFiles("*", SearchOption.AllDirectories);
-
-            totalFileCount = clobFiles.Count();
-
+            backgroundWorker1.ReportProgress(2);
             foreach (FileInfo file in clobFiles)
             {
                 AddTableXMLFileInfo(fileCount, file);
                 counter++;
 
                 fileCount++;
-                Console.WriteLine("Filecount: " + fileCount);
-                backgroundWorker1.ReportProgress( 0, counter);
+                //Console.WriteLine("Filecount: " + fileCount);
+                backgroundWorker1.ReportProgress(3, fileCount);
             }
 
             xmlWriter.WriteComment("Row count: " + counter);
@@ -167,7 +198,8 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
 
-            zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "test"));
+            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"));
+            Console.WriteLine("isZipped: " + isZipped);
 
             Console.WriteLine("Job complete");
 
@@ -270,7 +302,7 @@ namespace KDRS_External_Document_Integrator
         // Adds info for all table files to the table.xml file.
         private void AddTableXMLFileInfo(int fileCount, FileInfo fileInfo)
         {
-            Console.WriteLine("Adding table info for: " + fileInfo.Name);
+            //Console.WriteLine("Adding table info for: " + fileInfo.Name);
             //FileInfo fi = new FileInfo(fileName);
             long fileLength = fileInfo.Length;
 
@@ -320,7 +352,7 @@ namespace KDRS_External_Document_Integrator
         }
 
         //-------------------------------------------------------------------------------
-        private static void DirectoryCopy(string sourceFolder, string targetPath)
+        private void DirectoryCopy(string sourceFolder, string targetPath)
         {
             DirectoryInfo dir = new DirectoryInfo(sourceFolder);
 
@@ -334,7 +366,7 @@ namespace KDRS_External_Document_Integrator
             DirectoryInfo targetDir = new DirectoryInfo(targetPath);
             if (dir.Exists)
             {
-                throw new Exception("Target folder already exist: " + targetPath);
+               // throw new Exception("Target folder already exist: " + targetPath);
             }
             Directory.CreateDirectory(targetPath);
 
@@ -343,6 +375,8 @@ namespace KDRS_External_Document_Integrator
             {
                 string tempPath = Path.Combine(targetPath, file.Name);
                 file.CopyTo(tempPath, false);
+                fileCounter++;
+                backgroundWorker1.ReportProgress(1, fileCounter);
             }
 
             foreach (DirectoryInfo subdir in dirs)
@@ -366,9 +400,9 @@ namespace KDRS_External_Document_Integrator
 
     class SiardZipper
     {
-        public void SiardZip(string folder, string targetName)
+        public bool SiardZip(string folder, string targetName)
         {
-            string javaPath = @"C:\prog\zip64_v2.1.58\zip64-2.1.58\lib\zip64.jar";
+            string javaPath = @"D:\prog\zip64_v2.1.58\zip64\lib\zip64.jar";
             string source = "-d=" + folder;
             string target = targetName + ".siard";
 
@@ -384,16 +418,21 @@ namespace KDRS_External_Document_Integrator
             proc.StartInfo = startInfo;
 
             Console.WriteLine(javaCommand);
-
+            if (!File.Exists(javaPath))
+                throw new Exception("Cannot find zip64.jar");
             try
             {
-                Console.WriteLine("Creating .siard");
+                Console.WriteLine("Creating .siard at: " + target);
                 proc.Start();
+                proc.WaitForExit();
+
+                return proc.HasExited;
                 Console.WriteLine(".siard Created");
             }
             catch
             {
                 Console.WriteLine("zip error");
+                return proc.HasExited;
             }
         }
 
