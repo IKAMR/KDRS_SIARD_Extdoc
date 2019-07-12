@@ -97,7 +97,7 @@ namespace KDRS_External_Document_Integrator
             }
             else if (e.ProgressPercentage == 2)
             {
-                textBox1.AppendText("Writing xml file");
+                textBox1.AppendText("\r\n");
             }
             else if (e.ProgressPercentage == 3)
             {
@@ -164,6 +164,7 @@ namespace KDRS_External_Document_Integrator
             DirectoryCopy(docFolder, lobFolderPath);
 
             DirectoryInfo targetDir = new DirectoryInfo(lobFolderPath);
+            FileInfo[] copiedClobFiles = targetDir.GetFiles("*", SearchOption.AllDirectories);
 
             Console.WriteLine("Targetdir: " + targetDir.Name);
             if (!targetDir.Exists)
@@ -182,7 +183,7 @@ namespace KDRS_External_Document_Integrator
             CreateTableXML(tableFolderPath);
 
             backgroundWorker1.ReportProgress(2);
-            foreach (FileInfo file in clobFiles)
+            foreach (FileInfo file in copiedClobFiles)
             {
                 AddTableXMLFileInfo(fileCount, file);
                 counter++;
@@ -234,7 +235,7 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("folder");
-            xmlWriter.WriteString("table0");
+            xmlWriter.WriteString("schema0");
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("tables");
@@ -326,7 +327,9 @@ namespace KDRS_External_Document_Integrator
 
             string digest = CalculateMD5(fileInfo.FullName);
 
-            string parentFolder = Path.Combine(Path.GetFileName(Directory.GetParent(fileInfo.FullName).ToString()), fileInfo.Name);
+            // string parentFolder = Path.Combine(Path.GetFileName(Directory.GetParent(fileInfo.FullName).ToString()), fileInfo.Name);
+
+            string parentFolder = Path.Combine(GetParents(fileInfo.Directory),fileInfo.Name);
 
             xmlWriter.WriteStartElement("c15");
             xmlWriter.WriteAttributeString("file", parentFolder);
@@ -391,7 +394,15 @@ namespace KDRS_External_Document_Integrator
         {
             return value.ToString("dd.mm.yyyy HH.mm.ss");
         }
+        //-------------------------------------------------------------------------------
+        private string GetParents(DirectoryInfo fileDirectory)
+        {
+            string fileName = fileDirectory.Name;
+            if (fileDirectory.Parent.Name != "lob0")
+                fileName = GetParents(fileDirectory.Parent) + @"\" + fileName;
 
+            return fileName;
+        }
 
         //-------------------------------------------------------------------------------
     }
