@@ -112,7 +112,6 @@ namespace KDRS_External_Document_Integrator
             if (e.Error != null)
             {
                 textBox1.Text = "Error: " + e.Error.Message;
-
             }
             else
             {
@@ -126,12 +125,12 @@ namespace KDRS_External_Document_Integrator
         {
             try
             {
-                DoTransform();
-
+                //DoTransform();
+                MakeSiard();
             }
-            catch (IOException)
+            catch (IOException ex)
             {
-                throw new Exception("Files already exits in target folder");
+                throw ex; //new Exception("Files already exits in target folder");
             }
             catch (Exception ex)
             {
@@ -145,8 +144,8 @@ namespace KDRS_External_Document_Integrator
             docFolder = txtExtDocFolder.Text;
             Console.WriteLine("Document folder: " + docFolder);
 
-            string lobFolder = @"schema0\table0\lob0";
-            string tablefolder = @"schema0\table0";
+            string lobFolder = "documents";
+            string tablefolder = @"schema0\table0\";
 
             string lobFolderPath = Path.Combine(outPath, @"siard\content\" + lobFolder);
             string tableFolderPath = Path.Combine(outPath, @"siard\content\" + tablefolder);
@@ -176,13 +175,17 @@ namespace KDRS_External_Document_Integrator
 
             Console.WriteLine("Creating metadata.xml");
 
-            CreateMetadataXML(lobFolder);
+            CreateMetadataXML(lobFolder, "content", fileCount);
 
             Console.WriteLine("Creating table.xml");
 
             CreateTableXML(tableFolderPath);
 
             backgroundWorker1.ReportProgress(2);
+
+            Console.WriteLine("Clob files: " + copiedClobFiles.Length);
+
+
             foreach (FileInfo file in copiedClobFiles)
             {
                 AddTableXMLFileInfo(fileCount, file);
@@ -205,10 +208,77 @@ namespace KDRS_External_Document_Integrator
             Console.WriteLine("Job complete");
 
         }
+        //--------------------------------------------------------------------------------
+        public void MakeSiard()
+        {
+
+            docFolder = txtExtDocFolder.Text;
+
+          
+            
+            string tableFolderPath = Path.Combine(outPath, @"siard\content\schema0\table0\");
+
+            Uri docUri = new Uri(docFolder);
+            Uri outUri = new Uri(Path.Combine(outPath, @"siard\header"));
+
+            Uri relativePath = outUri.MakeRelativeUri(docUri);
+            //Uri relPathParent = new Uri(relativePath, "..");
+            Console.WriteLine("Relpath: " + relativePath);
+
+            int counter = 0;
+
+            DirectoryInfo sourceFolder = new DirectoryInfo(docFolder);
+
+            int fileCount = 0;
+            FileInfo[] clobFiles = sourceFolder.GetFiles("*", SearchOption.AllDirectories);
+
+            totalFileCount = clobFiles.Count();
+
+            Console.WriteLine("Source folder: " + docFolder);
+            if (!sourceFolder.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source folder does not exist or could not be found: "
+                    + sourceFolder);
+            }
+
+
+            Console.WriteLine("Creating metadata.xml");
+
+            CreateMetadataXML( "", relativePath.ToString(), totalFileCount);
+
+            Console.WriteLine("Creating table.xml");
+
+            CreateTableXML(tableFolderPath);
+
+            backgroundWorker1.ReportProgress(2);
+
+
+            foreach (FileInfo file in clobFiles)
+            {
+                AddTableXMLFileInfo(fileCount, file);
+                counter++;
+
+                fileCount++;
+                //Console.WriteLine("Filecount: " + fileCount);
+                backgroundWorker1.ReportProgress(3, fileCount);
+            }
+
+            xmlWriter.WriteComment("Row count: " + counter);
+            xmlWriter.WriteComment("Finished at: " + GetTimeStamp(DateTime.Now));
+
+            xmlWriter.WriteEndDocument();
+            xmlWriter.Close();
+
+            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"));
+            Console.WriteLine("isZipped: " + isZipped);
+
+            Console.WriteLine("Job complete");
+        }
 
         //--------------------------------------------------------------------------------
         // Creates table.xml file containing information about all the table files.
-        private void CreateMetadataXML(string lobFolder)
+        private void CreateMetadataXML(string lobFolder, string lobFolderPath, int fileCount)
         {
             string headerPath = Path.Combine(outPath, @"siard\header");
             Directory.CreateDirectory(headerPath);
@@ -227,6 +297,10 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteAttributeString("xsi", "schemaLocation", "http://www.w3.org/2001/XMLSchema-instance", "http://www.bar.admin.ch/xmlns/siard/2/metadata.xsd metadata.xsd");
             xmlWriter.WriteAttributeString("version", "2.1");
 
+            xmlWriter.WriteStartElement("lobFolder");
+            xmlWriter.WriteString(lobFolderPath);
+            xmlWriter.WriteEndElement();
+            
             xmlWriter.WriteStartElement("schemas");
             xmlWriter.WriteStartElement("schema");
 
@@ -250,6 +324,264 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("columns");
+
+            #region Columns
+            //Columns
+
+            // c1
+            xmlWriter.WriteComment("c1");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("objectID");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("INT");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c2
+            xmlWriter.WriteComment("c2");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("fileName");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c3
+            xmlWriter.WriteComment("c3");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("fileExt");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(20)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c4
+            xmlWriter.WriteComment("c4");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("filePath");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(255)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c5
+            xmlWriter.WriteComment("c5");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("fileMime");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c6
+            xmlWriter.WriteComment("c6");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("filePuid");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c7
+            xmlWriter.WriteComment("c7");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("fileType");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c8
+            xmlWriter.WriteComment("c8");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("fileVersion");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c9
+            xmlWriter.WriteComment("c9");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("file2Ext");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(20)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c10
+            xmlWriter.WriteComment("c10");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("file2Path");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c11
+            xmlWriter.WriteComment("c11");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("file2Mime");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c12
+            xmlWriter.WriteComment("c12");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("file2Puid");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c13
+            xmlWriter.WriteComment("c13");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("file2Type");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c14
+            xmlWriter.WriteComment("c14");
+            xmlWriter.WriteStartElement("column");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("file2Version");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("VARCHAR(100)");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            // c15
+            xmlWriter.WriteComment("c15");
             xmlWriter.WriteStartElement("column");
 
             xmlWriter.WriteStartElement("name");
@@ -260,15 +592,50 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteString(lobFolder);
             xmlWriter.WriteEndElement();
 
-            xmlWriter.WriteEndElement();
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.WriteEndElement();
+            xmlWriter.WriteStartElement("type");
+            xmlWriter.WriteString("BLOB");
             xmlWriter.WriteEndElement();
 
-            xmlWriter.WriteEndElement();
+            xmlWriter.WriteStartElement("nullable");
+            xmlWriter.WriteString("true");
             xmlWriter.WriteEndElement();
 
+            //End column
+            xmlWriter.WriteEndElement();
+
+            #endregion
+
+            //End columns
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("primaryKey");
+
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("PRIMARY");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("column");
+            xmlWriter.WriteString("objectID");
+            xmlWriter.WriteEndElement();
+
+            // End primaryKey
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("rows");
+            xmlWriter.WriteString(fileCount.ToString());
+            xmlWriter.WriteEndElement();
+
+            //End table
+            xmlWriter.WriteEndElement();
+            //End tables
+            xmlWriter.WriteEndElement();
+
+            //End schema
+            xmlWriter.WriteEndElement();
+            //End schemas
+            xmlWriter.WriteEndElement();
+
+            //End siardArchive
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteEndDocument();
@@ -284,7 +651,11 @@ namespace KDRS_External_Document_Integrator
                 IndentChars = "    "
             };
 
+            Directory.CreateDirectory(Directory.GetParent(lobFolderPath).ToString());
+
+            Console.WriteLine("Creating table0 at: " + lobFolderPath);
             xmlWriter = XmlWriter.Create(Path.Combine(lobFolderPath, "table0.xml"), xmlWriterSettings);
+            Console.WriteLine("table0 created");
 
             xmlWriter.WriteStartDocument();
 
@@ -303,9 +674,10 @@ namespace KDRS_External_Document_Integrator
         // Adds info for all table files to the table.xml file.
         private void AddTableXMLFileInfo(int fileCount, FileInfo fileInfo)
         {
-            //Console.WriteLine("Adding table info for: " + fileInfo.Name);
+            Console.WriteLine("Adding table info");
             //FileInfo fi = new FileInfo(fileName);
             long fileLength = fileInfo.Length;
+
 
             xmlWriter.WriteStartElement("row");
 
@@ -321,18 +693,19 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteString(fileInfo.Extension.Replace(".", ""));
             xmlWriter.WriteEndElement();
 
+            string dirctoryName = @"\" + GetParentName(fileInfo.DirectoryName, docFolder);
+            
             xmlWriter.WriteStartElement("c4");
-            xmlWriter.WriteString(fileInfo.FullName);
+            xmlWriter.WriteString(dirctoryName);
             xmlWriter.WriteEndElement();
 
             string digest = CalculateMD5(fileInfo.FullName);
 
-            // string parentFolder = Path.Combine(Path.GetFileName(Directory.GetParent(fileInfo.FullName).ToString()), fileInfo.Name);
-
-            string parentFolder = Path.Combine(GetParents(fileInfo.Directory),fileInfo.Name);
+            string directory = fileInfo.Directory.Name;
+            string fileName  = GetParentName(fileInfo.FullName, docFolder);
 
             xmlWriter.WriteStartElement("c15");
-            xmlWriter.WriteAttributeString("file", parentFolder);
+            xmlWriter.WriteAttributeString("file", fileName);
             xmlWriter.WriteAttributeString("length", fileLength.ToString());
             xmlWriter.WriteAttributeString("digestType", "MD5");
             xmlWriter.WriteAttributeString("digest", digest);
@@ -353,6 +726,18 @@ namespace KDRS_External_Document_Integrator
                 }
             }
         }
+        //--------------------------------------------------------------------------------
+        private string GetParentName(string fileInfo, string topParent)
+        {
+            var dir = new DirectoryInfo(fileInfo);
+
+            string tempParent = dir.Name;
+            Console.WriteLine("TempParent: " + tempParent);
+            if (dir.FullName == topParent)
+                return "";
+
+            return Path.Combine(this.GetParentName(dir.Parent.FullName, topParent), tempParent);
+        }
 
         //-------------------------------------------------------------------------------
         private void DirectoryCopy(string sourceFolder, string targetPath)
@@ -371,6 +756,8 @@ namespace KDRS_External_Document_Integrator
             {
                // throw new Exception("Target folder already exist: " + targetPath);
             }
+            Console.WriteLine("Creating:" + targetPath);
+
             Directory.CreateDirectory(targetPath);
 
             FileInfo[] files = dir.GetFiles();
@@ -421,10 +808,11 @@ namespace KDRS_External_Document_Integrator
 
             Process proc = new Process();
 
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-
-            startInfo.Arguments = javaCommand;
-            startInfo.FileName = "java";
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                Arguments = javaCommand,
+                FileName = "java"
+            };
 
             proc.StartInfo = startInfo;
 
@@ -438,7 +826,6 @@ namespace KDRS_External_Document_Integrator
                 proc.WaitForExit();
 
                 return proc.HasExited;
-                Console.WriteLine(".siard Created");
             }
             catch
             {
@@ -457,10 +844,11 @@ namespace KDRS_External_Document_Integrator
 
             Process proc = new Process();
 
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-
-            startInfo.Arguments = javaCommand;
-            startInfo.FileName = "java";
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                Arguments = javaCommand,
+                FileName = "java"
+            };
 
             proc.StartInfo = startInfo;
 
