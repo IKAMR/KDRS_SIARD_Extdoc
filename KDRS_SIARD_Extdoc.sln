@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KDRS_External_Document_Integrator", "KDRS_External_Document_Integrator\KDRS_External_Document_Integrator.csproj", "{5EDAAF19-A85D-496B-B190-A8570EA62F64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KDRS_SIARD_Extdoc", "KDRS_SIARD_Extdoc\KDRS_SIARD_Extdoc.csproj", "{5EDAAF19-A85D-496B-B190-A8570EA62F64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
