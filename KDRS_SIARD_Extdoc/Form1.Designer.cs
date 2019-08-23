@@ -1,4 +1,4 @@
-﻿namespace KDRS_External_Document_Integrator
+﻿namespace KDRS_SIARD_Extdoc
 {
     partial class Form1
     {
@@ -47,24 +47,24 @@
             // 
             // txtInFile
             // 
-            this.txtInFile.Location = new System.Drawing.Point(26, 51);
+            this.txtInFile.Location = new System.Drawing.Point(12, 11);
             this.txtInFile.Name = "txtInFile";
             this.txtInFile.Size = new System.Drawing.Size(374, 20);
             this.txtInFile.TabIndex = 0;
             // 
             // btnChooseInFile
             // 
-            this.btnChooseInFile.Location = new System.Drawing.Point(406, 49);
+            this.btnChooseInFile.Location = new System.Drawing.Point(392, 9);
             this.btnChooseInFile.Name = "btnChooseInFile";
             this.btnChooseInFile.Size = new System.Drawing.Size(132, 23);
             this.btnChooseInFile.TabIndex = 1;
-            this.btnChooseInFile.Text = "Choose .siard file";
+            this.btnChooseInFile.Text = "zip64.jar location";
             this.btnChooseInFile.UseVisualStyleBackColor = true;
             this.btnChooseInFile.Click += new System.EventHandler(this.btnChooseInPath_Click);
             // 
             // btnChooseOutFile
             // 
-            this.btnChooseOutFile.Location = new System.Drawing.Point(406, 108);
+            this.btnChooseOutFile.Location = new System.Drawing.Point(392, 68);
             this.btnChooseOutFile.Name = "btnChooseOutFile";
             this.btnChooseOutFile.Size = new System.Drawing.Size(132, 23);
             this.btnChooseOutFile.TabIndex = 3;
@@ -74,14 +74,14 @@
             // 
             // txtOutFile
             // 
-            this.txtOutFile.Location = new System.Drawing.Point(26, 110);
+            this.txtOutFile.Location = new System.Drawing.Point(12, 70);
             this.txtOutFile.Name = "txtOutFile";
             this.txtOutFile.Size = new System.Drawing.Size(374, 20);
             this.txtOutFile.TabIndex = 2;
             // 
             // btnStartProcess
             // 
-            this.btnStartProcess.Location = new System.Drawing.Point(26, 136);
+            this.btnStartProcess.Location = new System.Drawing.Point(12, 96);
             this.btnStartProcess.Name = "btnStartProcess";
             this.btnStartProcess.Size = new System.Drawing.Size(119, 40);
             this.btnStartProcess.TabIndex = 4;
@@ -91,7 +91,7 @@
             // 
             // btnChooseExtDoc
             // 
-            this.btnChooseExtDoc.Location = new System.Drawing.Point(406, 75);
+            this.btnChooseExtDoc.Location = new System.Drawing.Point(392, 35);
             this.btnChooseExtDoc.Name = "btnChooseExtDoc";
             this.btnChooseExtDoc.Size = new System.Drawing.Size(132, 23);
             this.btnChooseExtDoc.TabIndex = 6;
@@ -101,7 +101,7 @@
             // 
             // txtExtDocFolder
             // 
-            this.txtExtDocFolder.Location = new System.Drawing.Point(26, 77);
+            this.txtExtDocFolder.Location = new System.Drawing.Point(12, 37);
             this.txtExtDocFolder.Name = "txtExtDocFolder";
             this.txtExtDocFolder.Size = new System.Drawing.Size(374, 20);
             this.txtExtDocFolder.TabIndex = 5;
@@ -111,11 +111,11 @@
             this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(26, 183);
+            this.textBox1.Location = new System.Drawing.Point(12, 143);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(519, 91);
+            this.textBox1.Size = new System.Drawing.Size(519, 147);
             this.textBox1.TabIndex = 7;
             // 
             // backgroundWorker1
@@ -126,7 +126,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(557, 493);
+            this.ClientSize = new System.Drawing.Size(557, 302);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.btnChooseExtDoc);
             this.Controls.Add(this.txtExtDocFolder);

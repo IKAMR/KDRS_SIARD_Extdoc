@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
-namespace KDRS_External_Document_Integrator
+namespace KDRS_SIARD_Extdoc
 {
     public partial class Form1 : Form
     {
@@ -28,7 +22,7 @@ namespace KDRS_External_Document_Integrator
 
         public bool isZipped;
 
-        public string zipJarPath = string.Empty;
+        public string zip64JarPath = string.Empty;
 
         XmlWriter xmlWriter;
 
@@ -38,6 +32,7 @@ namespace KDRS_External_Document_Integrator
         public Form1()
         {
             InitializeComponent();
+            
         }
         //--------------------------------------------------------------------------------
 
@@ -62,7 +57,6 @@ namespace KDRS_External_Document_Integrator
             DialogResult dr = folderBrowserDialog1.ShowDialog();
             if (dr == DialogResult.OK)
                 outPath = folderBrowserDialog1.SelectedPath;
-            
         }
         //--------------------------------------------------------------------------------
         // Start program
@@ -70,10 +64,14 @@ namespace KDRS_External_Document_Integrator
         {
             textBox1.Clear();
 
-            inFile = txtInFile.Text;
+            //inFile = txtInFile.Text;
             outPath = txtOutFile.Text;
 
-            zipJarPath = txtInFile.Text;
+            if (txtInFile.Text != "")
+            {
+                Properties.Settings.Default.Zip64JarPath = txtInFile.Text;
+                Properties.Settings.Default.Save();
+            }
 
             Console.WriteLine("outPath: " + outPath);
 
@@ -202,7 +200,7 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
 
-            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"));
+            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"), Properties.Settings.Default.Zip64JarPath);
             Console.WriteLine("isZipped: " + isZipped);
 
             Console.WriteLine("Job complete");
@@ -270,7 +268,7 @@ namespace KDRS_External_Document_Integrator
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
 
-            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"));
+            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"), Properties.Settings.Default.Zip64JarPath);
             Console.WriteLine("isZipped: " + isZipped);
 
             Console.WriteLine("Job complete");
@@ -790,6 +788,15 @@ namespace KDRS_External_Document_Integrator
 
             return fileName;
         }
+        //-------------------------------------------------------------------------------
+        private void ReadSettingsFile(string settingsFileName)
+        {
+            var dic = File.ReadAllLines(settingsFileName)
+                .Select(l => l.Split(new[] { '=' }))
+                .ToDictionary(s => s[0].Trim(), s => s[1].Trim());
+
+            zip64JarPath = dic["zip64JarPath"];
+        }
 
         //-------------------------------------------------------------------------------
     }
@@ -798,13 +805,14 @@ namespace KDRS_External_Document_Integrator
 
     class SiardZipper
     {
-        public bool SiardZip(string folder, string targetName)
+        public bool SiardZip(string folder, string targetName, string jarPath)
         {
-            string javaPath = @"D:\prog\zip64_v2.1.58\zip64\lib\zip64.jar";
+            Console.WriteLine("zip64: " + jarPath);
+            jarPath =Path.Combine(jarPath, "zip64.jar");
             string source = "-d=" + folder;
             string target = targetName + ".siard";
 
-            string javaCommand = " -jar " + javaPath + " n " + source + " " + target;
+            string javaCommand = " -jar " + jarPath + " n " + source + " " + target;
 
             Process proc = new Process();
 
@@ -817,7 +825,7 @@ namespace KDRS_External_Document_Integrator
             proc.StartInfo = startInfo;
 
             Console.WriteLine(javaCommand);
-            if (!File.Exists(javaPath))
+            if (!File.Exists(jarPath))
                 throw new Exception("Cannot find zip64.jar");
             try
             {
@@ -834,13 +842,13 @@ namespace KDRS_External_Document_Integrator
             }
         }
 
-        public void SiardUnZip(string targetFolder, string sourceFile)
+        public void SiardUnZip(string targetFolder, string sourceFile, string jarPath)
         {
-            string javaPath = @"C:\prog\zip64_v2.1.58\zip64-2.1.58\lib\zip64.jar";
+            jarPath = Path.Combine(jarPath, "zip64.jar");
             string target = "-d=" + targetFolder;
             string source = sourceFile + ".siard";
 
-            string javaCommand = " -jar " + javaPath + " x " + target + " " + source;
+            string javaCommand = " -jar " + jarPath + " x " + target + " " + source;
 
             Process proc = new Process();
 
