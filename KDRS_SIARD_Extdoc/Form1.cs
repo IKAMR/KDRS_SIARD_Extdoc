@@ -32,6 +32,7 @@ namespace KDRS_SIARD_Extdoc
         public Form1()
         {
             InitializeComponent();
+            Text = Globals.toolName + " " + Globals.toolVersion;
             
         }
         //--------------------------------------------------------------------------------
@@ -799,6 +800,13 @@ namespace KDRS_SIARD_Extdoc
         }
 
         //-------------------------------------------------------------------------------
+    }
+
+    //=======================================================================================
+    public static class Globals
+    {
+        public static readonly String toolName = "KDRS SIARD Extdoc";
+        public static readonly String toolVersion = "0.2";
     }
 
     //=======================================================================================
