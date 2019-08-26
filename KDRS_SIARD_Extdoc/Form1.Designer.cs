@@ -31,8 +31,8 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.txtInFile = new System.Windows.Forms.TextBox();
             this.btnChooseInFile = new System.Windows.Forms.Button();
-            this.btnChooseOutFile = new System.Windows.Forms.Button();
-            this.txtOutFile = new System.Windows.Forms.TextBox();
+            this.btnChooseOutFolder = new System.Windows.Forms.Button();
+            this.txtOutFolder = new System.Windows.Forms.TextBox();
             this.btnStartProcess = new System.Windows.Forms.Button();
             this.btnChooseExtDoc = new System.Windows.Forms.Button();
             this.txtExtDocFolder = new System.Windows.Forms.TextBox();
@@ -62,22 +62,22 @@
             this.btnChooseInFile.UseVisualStyleBackColor = true;
             this.btnChooseInFile.Click += new System.EventHandler(this.btnChooseInPath_Click);
             // 
-            // btnChooseOutFile
+            // btnChooseOutFolder
             // 
-            this.btnChooseOutFile.Location = new System.Drawing.Point(392, 68);
-            this.btnChooseOutFile.Name = "btnChooseOutFile";
-            this.btnChooseOutFile.Size = new System.Drawing.Size(132, 23);
-            this.btnChooseOutFile.TabIndex = 3;
-            this.btnChooseOutFile.Text = "Choose target folder";
-            this.btnChooseOutFile.UseVisualStyleBackColor = true;
-            this.btnChooseOutFile.Click += new System.EventHandler(this.btnChooseOutFile_Click);
+            this.btnChooseOutFolder.Location = new System.Drawing.Point(392, 68);
+            this.btnChooseOutFolder.Name = "btnChooseOutFolder";
+            this.btnChooseOutFolder.Size = new System.Drawing.Size(132, 23);
+            this.btnChooseOutFolder.TabIndex = 3;
+            this.btnChooseOutFolder.Text = "Choose target folder";
+            this.btnChooseOutFolder.UseVisualStyleBackColor = true;
+            this.btnChooseOutFolder.Click += new System.EventHandler(this.btnChooseOutFolder_Click);
             // 
             // txtOutFile
             // 
-            this.txtOutFile.Location = new System.Drawing.Point(12, 70);
-            this.txtOutFile.Name = "txtOutFile";
-            this.txtOutFile.Size = new System.Drawing.Size(374, 20);
-            this.txtOutFile.TabIndex = 2;
+            this.txtOutFolder.Location = new System.Drawing.Point(12, 70);
+            this.txtOutFolder.Name = "txtOutFile";
+            this.txtOutFolder.Size = new System.Drawing.Size(374, 20);
+            this.txtOutFolder.TabIndex = 2;
             // 
             // btnStartProcess
             // 
@@ -131,8 +131,8 @@
             this.Controls.Add(this.btnChooseExtDoc);
             this.Controls.Add(this.txtExtDocFolder);
             this.Controls.Add(this.btnStartProcess);
-            this.Controls.Add(this.btnChooseOutFile);
-            this.Controls.Add(this.txtOutFile);
+            this.Controls.Add(this.btnChooseOutFolder);
+            this.Controls.Add(this.txtOutFolder);
             this.Controls.Add(this.btnChooseInFile);
             this.Controls.Add(this.txtInFile);
             this.Name = "Form1";
@@ -147,8 +147,8 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.TextBox txtInFile;
         private System.Windows.Forms.Button btnChooseInFile;
-        private System.Windows.Forms.Button btnChooseOutFile;
-        private System.Windows.Forms.TextBox txtOutFile;
+        private System.Windows.Forms.Button btnChooseOutFolder;
+        private System.Windows.Forms.TextBox txtOutFolder;
         private System.Windows.Forms.Button btnStartProcess;
         private System.Windows.Forms.Button btnChooseExtDoc;
         private System.Windows.Forms.TextBox txtExtDocFolder;

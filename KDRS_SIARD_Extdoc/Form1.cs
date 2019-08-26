@@ -53,11 +53,12 @@ namespace KDRS_SIARD_Extdoc
         }
         //--------------------------------------------------------------------------------
 
-        private void btnChooseOutFile_Click(object sender, EventArgs e)
+        private void btnChooseOutFolder_Click(object sender, EventArgs e)
         {
             DialogResult dr = folderBrowserDialog1.ShowDialog();
             if (dr == DialogResult.OK)
                 outPath = folderBrowserDialog1.SelectedPath;
+            txtOutFolder.Text = outPath;
         }
         //--------------------------------------------------------------------------------
         // Start program
@@ -66,7 +67,7 @@ namespace KDRS_SIARD_Extdoc
             textBox1.Clear();
 
             //inFile = txtInFile.Text;
-            outPath = txtOutFile.Text;
+            outPath = txtOutFolder.Text;
 
             if (txtInFile.Text != "")
             {
@@ -790,6 +791,7 @@ namespace KDRS_SIARD_Extdoc
             return fileName;
         }
         //-------------------------------------------------------------------------------
+        // Not used
         private void ReadSettingsFile(string settingsFileName)
         {
             var dic = File.ReadAllLines(settingsFileName)
@@ -816,7 +818,7 @@ namespace KDRS_SIARD_Extdoc
         public bool SiardZip(string folder, string targetName, string jarPath)
         {
             Console.WriteLine("zip64: " + jarPath);
-            jarPath =Path.Combine(jarPath, "zip64.jar");
+           // jarPath =Path.Combine(jarPath, "zip64.jar");
             string source = "-d=" + folder;
             string target = targetName + ".siard";
 
@@ -834,7 +836,7 @@ namespace KDRS_SIARD_Extdoc
 
             Console.WriteLine(javaCommand);
             if (!File.Exists(jarPath))
-                throw new Exception("Cannot find zip64.jar");
+                throw new Exception("Cannot find zip64.jar at " + jarPath);
             try
             {
                 Console.WriteLine("Creating .siard at: " + target);

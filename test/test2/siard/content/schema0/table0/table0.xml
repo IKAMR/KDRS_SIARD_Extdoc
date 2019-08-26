@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Create time: 26.08.2019 14:59:38-->
+<table xsi:schemaLocation="http://www.bar.admin.ch/xmlns/siard/2/table.xsd table.xsd" version="2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.bar.admin.ch/xmlns/siard/2/table.xsd">
+    <row>
+        <c1>0</c1>
+        <c2>rec1.bin</c2>
+        <c3>bin</c3>
+        <c4>\</c4>
+        <c15 file="rec1.bin" length="79939" digestType="MD5" digest="A2763BAFE0228A1FF2D6368677F6ADFF" />
+    </row>
+    <!--Row count: 1-->
+    <!--Finished at: 26.59.2019 14.59.38-->
+</table>
