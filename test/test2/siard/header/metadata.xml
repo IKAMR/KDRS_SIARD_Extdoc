@@ -1,6 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <siardArchive xsi:schemaLocation="http://www.bar.admin.ch/xmlns/siard/2/metadata.xsd metadata.xsd" version="2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.bar.admin.ch/xmlns/siard/2/metadata.xsd">
+    <dbname>Extdoc</dbname>
+    <description>baldlasf,dlsøa,flaf,dsøa,fldsøa
+fdsafm,kadmfkldsa</description>
+    <archiver></archiver>
+    <archiverContact></archiverContact>
+    <dataOwner>tet</dataOwner>
+    <dataOriginTimespan>test</dataOriginTimespan>
     <lobFolder>../../siard/content/schema0/table0/lob0/seg0</lobFolder>
+    <producerApplication>KDRS SIARD Extdoc v0.2</producerApplication>
+    <archivalDate>28.16.2019 13.16.23</archivalDate>
+    <clientMachine>IKAMR-B33</clientMachine>
     <schemas>
         <schema>
             <name>schemaName</name>
@@ -97,7 +107,7 @@
                         <!--c15-->
                         <column>
                             <name>fileObject</name>
-                            <lobFolder></lobFolder>
+                            <lobFolder>seg0</lobFolder>
                             <type>BLOB</type>
                             <nullable>true</nullable>
                         </column>
