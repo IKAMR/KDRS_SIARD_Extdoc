@@ -61,7 +61,7 @@
             this.txtInFile.Location = new System.Drawing.Point(154, 61);
             this.txtInFile.Name = "txtInFile";
             this.txtInFile.Size = new System.Drawing.Size(401, 20);
-            this.txtInFile.TabIndex = 0;
+            this.txtInFile.TabIndex = 5;
             // 
             // btnChooseInFile
             // 
@@ -69,7 +69,7 @@
             this.btnChooseInFile.Location = new System.Drawing.Point(16, 62);
             this.btnChooseInFile.Name = "btnChooseInFile";
             this.btnChooseInFile.Size = new System.Drawing.Size(132, 23);
-            this.btnChooseInFile.TabIndex = 1;
+            this.btnChooseInFile.TabIndex = 4;
             this.btnChooseInFile.Text = "zip64.jar location";
             this.btnChooseInFile.UseVisualStyleBackColor = true;
             this.btnChooseInFile.Click += new System.EventHandler(this.btnChooseInPath_Click);
@@ -80,7 +80,7 @@
             this.btnChooseOutFolder.Location = new System.Drawing.Point(16, 33);
             this.btnChooseOutFolder.Name = "btnChooseOutFolder";
             this.btnChooseOutFolder.Size = new System.Drawing.Size(132, 23);
-            this.btnChooseOutFolder.TabIndex = 3;
+            this.btnChooseOutFolder.TabIndex = 2;
             this.btnChooseOutFolder.Text = "Choose target folder";
             this.btnChooseOutFolder.UseVisualStyleBackColor = true;
             this.btnChooseOutFolder.Click += new System.EventHandler(this.btnChooseOutFolder_Click);
@@ -91,14 +91,14 @@
             this.txtOutFolder.Location = new System.Drawing.Point(154, 35);
             this.txtOutFolder.Name = "txtOutFolder";
             this.txtOutFolder.Size = new System.Drawing.Size(401, 20);
-            this.txtOutFolder.TabIndex = 2;
+            this.txtOutFolder.TabIndex = 3;
             // 
             // btnStartProcess
             // 
             this.btnStartProcess.Location = new System.Drawing.Point(12, 96);
             this.btnStartProcess.Name = "btnStartProcess";
             this.btnStartProcess.Size = new System.Drawing.Size(119, 40);
-            this.btnStartProcess.TabIndex = 4;
+            this.btnStartProcess.TabIndex = 6;
             this.btnStartProcess.Text = "Start process";
             this.btnStartProcess.UseVisualStyleBackColor = true;
             this.btnStartProcess.Click += new System.EventHandler(this.btnStartProcess_Click);
@@ -109,7 +109,7 @@
             this.btnChooseExtDoc.Location = new System.Drawing.Point(16, 7);
             this.btnChooseExtDoc.Name = "btnChooseExtDoc";
             this.btnChooseExtDoc.Size = new System.Drawing.Size(132, 23);
-            this.btnChooseExtDoc.TabIndex = 6;
+            this.btnChooseExtDoc.TabIndex = 0;
             this.btnChooseExtDoc.Text = "Choose document folder";
             this.btnChooseExtDoc.UseVisualStyleBackColor = true;
             this.btnChooseExtDoc.Click += new System.EventHandler(this.btnChooseExtDoc_Click);
@@ -120,7 +120,7 @@
             this.txtExtDocFolder.Location = new System.Drawing.Point(154, 9);
             this.txtExtDocFolder.Name = "txtExtDocFolder";
             this.txtExtDocFolder.Size = new System.Drawing.Size(401, 20);
-            this.txtExtDocFolder.TabIndex = 5;
+            this.txtExtDocFolder.TabIndex = 1;
             // 
             // textBox1
             // 
@@ -133,6 +133,7 @@
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(543, 86);
             this.textBox1.TabIndex = 7;
+            this.textBox1.TabStop = false;
             // 
             // backgroundWorker1
             // 
@@ -144,7 +145,7 @@
             this.txtArchiver.Location = new System.Drawing.Point(249, 235);
             this.txtArchiver.Name = "txtArchiver";
             this.txtArchiver.Size = new System.Drawing.Size(306, 20);
-            this.txtArchiver.TabIndex = 0;
+            this.txtArchiver.TabIndex = 8;
             // 
             // textBox3
             // 
@@ -153,7 +154,8 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
             this.textBox3.Size = new System.Drawing.Size(204, 20);
-            this.textBox3.TabIndex = 1;
+            this.textBox3.TabIndex = 4;
+            this.textBox3.TabStop = false;
             this.textBox3.Text = "Archiver: (person, OPTIONAL)";
             // 
             // txtArchCont
@@ -162,7 +164,7 @@
             this.txtArchCont.Location = new System.Drawing.Point(249, 261);
             this.txtArchCont.Name = "txtArchCont";
             this.txtArchCont.Size = new System.Drawing.Size(306, 20);
-            this.txtArchCont.TabIndex = 2;
+            this.txtArchCont.TabIndex = 9;
             // 
             // textBox4
             // 
@@ -171,7 +173,8 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.ReadOnly = true;
             this.textBox4.Size = new System.Drawing.Size(204, 20);
-            this.textBox4.TabIndex = 3;
+            this.textBox4.TabIndex = 17;
+            this.textBox4.TabStop = false;
             this.textBox4.Text = "Archiver contact (OPTIONAL)";
             // 
             // txtDatOwn
@@ -180,7 +183,7 @@
             this.txtDatOwn.Location = new System.Drawing.Point(249, 287);
             this.txtDatOwn.Name = "txtDatOwn";
             this.txtDatOwn.Size = new System.Drawing.Size(306, 20);
-            this.txtDatOwn.TabIndex = 4;
+            this.txtDatOwn.TabIndex = 10;
             // 
             // textBox6
             // 
@@ -189,7 +192,8 @@
             this.textBox6.Name = "textBox6";
             this.textBox6.ReadOnly = true;
             this.textBox6.Size = new System.Drawing.Size(204, 20);
-            this.textBox6.TabIndex = 5;
+            this.textBox6.TabIndex = 2;
+            this.textBox6.TabStop = false;
             this.textBox6.Text = "Data owner (MANDATORY)";
             // 
             // txtDatOriTime
@@ -198,7 +202,7 @@
             this.txtDatOriTime.Location = new System.Drawing.Point(249, 313);
             this.txtDatOriTime.Name = "txtDatOriTime";
             this.txtDatOriTime.Size = new System.Drawing.Size(306, 20);
-            this.txtDatOriTime.TabIndex = 6;
+            this.txtDatOriTime.TabIndex = 11;
             // 
             // textBox8
             // 
@@ -208,6 +212,7 @@
             this.textBox8.ReadOnly = true;
             this.textBox8.Size = new System.Drawing.Size(204, 20);
             this.textBox8.TabIndex = 7;
+            this.textBox8.TabStop = false;
             this.textBox8.Text = "Data origin timespan (MANDATORY)";
             // 
             // txtMetaDesc
@@ -217,7 +222,7 @@
             this.txtMetaDesc.Multiline = true;
             this.txtMetaDesc.Name = "txtMetaDesc";
             this.txtMetaDesc.Size = new System.Drawing.Size(306, 83);
-            this.txtMetaDesc.TabIndex = 8;
+            this.txtMetaDesc.TabIndex = 12;
             // 
             // textBox10
             // 
@@ -227,6 +232,7 @@
             this.textBox10.ReadOnly = true;
             this.textBox10.Size = new System.Drawing.Size(204, 20);
             this.textBox10.TabIndex = 9;
+            this.textBox10.TabStop = false;
             this.textBox10.Text = "Description (OPTIONAL)";
             // 
             // Form1

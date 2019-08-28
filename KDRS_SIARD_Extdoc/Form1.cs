@@ -664,6 +664,20 @@ namespace KDRS_SIARD_Extdoc
             //End schemas
             xmlWriter.WriteEndElement();
 
+            // users
+            xmlWriter.WriteStartElement("users");
+            // user
+            xmlWriter.WriteStartElement("user");
+            // name
+            xmlWriter.WriteStartElement("name");
+            xmlWriter.WriteString("extdocuser");
+            // End name
+            xmlWriter.WriteEndElement();
+            // End user
+            xmlWriter.WriteEndElement();
+            // End users
+            xmlWriter.WriteEndElement();
+
             //End siardArchive
             xmlWriter.WriteEndElement();
 
@@ -675,7 +689,7 @@ namespace KDRS_SIARD_Extdoc
         private void AddXMLMetadata(string fileName, string lobFolder, string lobFolderPath)
         {
 
-            string dbName = "Extdoc";
+            string dbName = "extdoc";
 
             xmlWriter.WriteStartElement("dbname");
             xmlWriter.WriteString(dbName);
@@ -710,7 +724,7 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("archivalDate");
-            xmlWriter.WriteString(GetTimeStamp(DateTime.Now));
+            xmlWriter.WriteString(GetDate(DateTime.Now));
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("clientMachine");
@@ -859,7 +873,12 @@ namespace KDRS_SIARD_Extdoc
         //-------------------------------------------------------------------------------
         private static String GetTimeStamp(DateTime value)
         {
-            return value.ToString("dd.mm.yyyy HH.mm.ss");
+            return value.ToString("dd.MM.yyyy HH.mm.ss");
+        }      
+        //-------------------------------------------------------------------------------
+        private static String GetDate(DateTime value)
+        {
+            return value.ToString("yyyy-MM-dd");
         }
         //-------------------------------------------------------------------------------
         private string GetParents(DirectoryInfo fileDirectory)
