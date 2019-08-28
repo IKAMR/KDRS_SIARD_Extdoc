@@ -888,7 +888,7 @@ namespace KDRS_SIARD_Extdoc
     public static class Globals
     {
         public static readonly String toolName = "KDRS SIARD Extdoc";
-        public static readonly String toolVersion = "0.2";
+        public static readonly String toolVersion = "0.3";
     }
 
     //=======================================================================================
