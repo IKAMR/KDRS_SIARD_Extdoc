@@ -334,7 +334,7 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteStartElement("schema");
 
             xmlWriter.WriteStartElement("name");
-            xmlWriter.WriteString("schemaName");
+            xmlWriter.WriteString("extdoc");
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("folder");
