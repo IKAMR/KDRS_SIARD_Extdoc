@@ -24,6 +24,12 @@ namespace KDRS_SIARD_Extdoc
 
         public string zip64JarPath = string.Empty;
 
+        public string archiver = string.Empty;
+        public string archCont = string.Empty;
+        public string dataOwner = string.Empty;
+        public string dataOrigin = string.Empty;
+        public string metaDataDesc = string.Empty;
+
         XmlWriter xmlWriter;
 
         SiardZipper zipper = new SiardZipper();
@@ -33,7 +39,7 @@ namespace KDRS_SIARD_Extdoc
         {
             InitializeComponent();
             Text = Globals.toolName + " " + Globals.toolVersion;
-            
+
         }
         //--------------------------------------------------------------------------------
 
@@ -53,38 +59,65 @@ namespace KDRS_SIARD_Extdoc
         }
         //--------------------------------------------------------------------------------
 
-        private void btnChooseOutFile_Click(object sender, EventArgs e)
+        private void btnChooseOutFolder_Click(object sender, EventArgs e)
         {
             DialogResult dr = folderBrowserDialog1.ShowDialog();
             if (dr == DialogResult.OK)
                 outPath = folderBrowserDialog1.SelectedPath;
+            txtOutFolder.Text = outPath;
         }
         //--------------------------------------------------------------------------------
         // Start program
         private void btnStartProcess_Click(object sender, EventArgs e)
         {
-            textBox1.Clear();
 
-            //inFile = txtInFile.Text;
-            outPath = txtOutFile.Text;
-
-            if (txtInFile.Text != "")
+            if (textBox_Validate())
             {
-                Properties.Settings.Default.Zip64JarPath = txtInFile.Text;
-                Properties.Settings.Default.Save();
+
+                outPath = txtOutFolder.Text;
+
+                archiver = txtArchiver.Text;
+                archCont = txtArchCont.Text;
+                dataOwner = txtDatOwn.Text;
+                dataOrigin = txtDatOriTime.Text;
+
+                metaDataDesc = txtMetaDesc.Text;
+
+                if (txtInFile.Text != "")
+                {
+                    Properties.Settings.Default.Zip64JarPath = txtInFile.Text;
+                    Properties.Settings.Default.Save();
+                }
+
+                Console.WriteLine("outPath: " + outPath);
+
+                if (outPath != string.Empty)
+                {
+                    backgroundWorker1 = new BackgroundWorker();
+                    backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+                    backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+                    backgroundWorker1.RunWorkerCompleted += backgroundWorker1_RunWorkerCompleted;
+                    backgroundWorker1.WorkerReportsProgress = true;
+                    backgroundWorker1.RunWorkerAsync();
+                }
             }
-
-            Console.WriteLine("outPath: " + outPath);
-
-            if (outPath != string.Empty)
+        }
+        //--------------------------------------------------------------------------------
+        private bool textBox_Validate()
+        {
+            foreach (TextBox tb in this.Controls.OfType<TextBox>().Where(x => x.CausesValidation == true))
             {
-                backgroundWorker1 = new BackgroundWorker();
-                backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
-                backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
-                backgroundWorker1.RunWorkerCompleted += backgroundWorker1_RunWorkerCompleted;
-                backgroundWorker1.WorkerReportsProgress = true;
-                backgroundWorker1.RunWorkerAsync();
+                if (tb.Text == "")
+                {
+                    textBox1.Text = string.Format("Fill inn '{0 }'", tb.AccessibleName);
+                    return false;
+                }
+                else
+                {
+                    textBox1.Clear();
+                }
             }
+            return true;
         }
         //--------------------------------------------------------------------------------
 
@@ -110,7 +143,7 @@ namespace KDRS_SIARD_Extdoc
         {
             if (e.Error != null)
             {
-                textBox1.Text = "Error: " + e.Error.Message;
+                textBox1.AppendText("\r\n\r\nError: " + e.Error.Message);
             }
             else
             {
@@ -191,7 +224,6 @@ namespace KDRS_SIARD_Extdoc
                 counter++;
 
                 fileCount++;
-                //Console.WriteLine("Filecount: " + fileCount);
                 backgroundWorker1.ReportProgress(3, fileCount);
             }
 
@@ -213,8 +245,6 @@ namespace KDRS_SIARD_Extdoc
 
             docFolder = txtExtDocFolder.Text;
 
-          
-            
             string tableFolderPath = Path.Combine(outPath, @"siard\content\schema0\table0\");
 
             Uri docUri = new Uri(docFolder);
@@ -244,7 +274,7 @@ namespace KDRS_SIARD_Extdoc
 
             Console.WriteLine("Creating metadata.xml");
 
-            CreateMetadataXML( "", relativePath.ToString(), totalFileCount);
+            CreateMetadataXML(sourceFolder.Name, relativePath.ToString(), totalFileCount);
 
             Console.WriteLine("Creating table.xml");
 
@@ -288,7 +318,9 @@ namespace KDRS_SIARD_Extdoc
                 IndentChars = "    "
             };
 
-            xmlWriter = XmlWriter.Create(headerPath + "/metadata.xml", xmlWriterSettings);
+            string fileName = Path.Combine(headerPath, "metadata.xml");
+
+            xmlWriter = XmlWriter.Create(fileName, xmlWriterSettings);
 
             xmlWriter.WriteStartDocument();
 
@@ -296,10 +328,8 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteAttributeString("xsi", "schemaLocation", "http://www.w3.org/2001/XMLSchema-instance", "http://www.bar.admin.ch/xmlns/siard/2/metadata.xsd metadata.xsd");
             xmlWriter.WriteAttributeString("version", "2.1");
 
-            xmlWriter.WriteStartElement("lobFolder");
-            xmlWriter.WriteString(lobFolderPath);
-            xmlWriter.WriteEndElement();
-            
+            AddXMLMetadata(fileName, lobFolder, lobFolderPath);
+
             xmlWriter.WriteStartElement("schemas");
             xmlWriter.WriteStartElement("schema");
 
@@ -640,6 +670,55 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
         }
+
+        //--------------------------------------------------------------------------------
+        private void AddXMLMetadata(string fileName, string lobFolder, string lobFolderPath)
+        {
+
+            string dbName = "Extdoc";
+
+            xmlWriter.WriteStartElement("dbname");
+            xmlWriter.WriteString(dbName);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("description");
+            xmlWriter.WriteString(metaDataDesc);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("archiver");
+            xmlWriter.WriteString(archiver);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("archiverContact");
+            xmlWriter.WriteString(archCont);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("dataOwner");
+            xmlWriter.WriteString(dataOwner);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("dataOriginTimespan");
+            xmlWriter.WriteString(dataOrigin);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("lobFolder");
+            xmlWriter.WriteString(lobFolderPath);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("producerApplication");
+            xmlWriter.WriteString("KDRS SIARD Extdoc v" + Globals.toolVersion);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("archivalDate");
+            xmlWriter.WriteString(GetTimeStamp(DateTime.Now));
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("clientMachine");
+            xmlWriter.WriteString(Environment.MachineName);
+            xmlWriter.WriteEndElement();
+
+        }
+
         //--------------------------------------------------------------------------------
         // Creates table.xml file containing information about all the table files.
         private void CreateTableXML(string lobFolderPath)
@@ -669,7 +748,9 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteAttributeString("version", "2.1");
 
         }
+
         //--------------------------------------------------------------------------------
+
         // Adds info for all table files to the table.xml file.
         private void AddTableXMLFileInfo(int fileCount, FileInfo fileInfo)
         {
@@ -693,7 +774,7 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteEndElement();
 
             string dirctoryName = @"\" + GetParentName(fileInfo.DirectoryName, docFolder);
-            
+
             xmlWriter.WriteStartElement("c4");
             xmlWriter.WriteString(dirctoryName);
             xmlWriter.WriteEndElement();
@@ -701,7 +782,7 @@ namespace KDRS_SIARD_Extdoc
             string digest = CalculateMD5(fileInfo.FullName);
 
             string directory = fileInfo.Directory.Name;
-            string fileName  = GetParentName(fileInfo.FullName, docFolder);
+            string fileName = GetParentName(fileInfo.FullName, docFolder);
 
             xmlWriter.WriteStartElement("c15");
             xmlWriter.WriteAttributeString("file", fileName);
@@ -753,7 +834,7 @@ namespace KDRS_SIARD_Extdoc
             DirectoryInfo targetDir = new DirectoryInfo(targetPath);
             if (dir.Exists)
             {
-               // throw new Exception("Target folder already exist: " + targetPath);
+                // throw new Exception("Target folder already exist: " + targetPath);
             }
             Console.WriteLine("Creating:" + targetPath);
 
@@ -790,6 +871,7 @@ namespace KDRS_SIARD_Extdoc
             return fileName;
         }
         //-------------------------------------------------------------------------------
+        // Not used
         private void ReadSettingsFile(string settingsFileName)
         {
             var dic = File.ReadAllLines(settingsFileName)
@@ -806,7 +888,7 @@ namespace KDRS_SIARD_Extdoc
     public static class Globals
     {
         public static readonly String toolName = "KDRS SIARD Extdoc";
-        public static readonly String toolVersion = "0.2";
+        public static readonly String toolVersion = "0.3";
     }
 
     //=======================================================================================
@@ -816,7 +898,7 @@ namespace KDRS_SIARD_Extdoc
         public bool SiardZip(string folder, string targetName, string jarPath)
         {
             Console.WriteLine("zip64: " + jarPath);
-            jarPath =Path.Combine(jarPath, "zip64.jar");
+            // jarPath =Path.Combine(jarPath, "zip64.jar");
             string source = "-d=" + folder;
             string target = targetName + ".siard";
 
@@ -834,7 +916,7 @@ namespace KDRS_SIARD_Extdoc
 
             Console.WriteLine(javaCommand);
             if (!File.Exists(jarPath))
-                throw new Exception("Cannot find zip64.jar");
+                throw new Exception("Cannot find zip64.jar at " + jarPath);
             try
             {
                 Console.WriteLine("Creating .siard at: " + target);

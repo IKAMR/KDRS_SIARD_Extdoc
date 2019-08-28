@@ -25,7 +25,7 @@ namespace KDRS_SIARD_Extdoc.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\prog\\zip64_v2.1.58\\zip64\\lib")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\prog\\zip64_v2.1.58\\zip64\\lib\\zip64.jar")]
         public string Zip64JarPath {
             get {
                 return ((string)(this["Zip64JarPath"]));
