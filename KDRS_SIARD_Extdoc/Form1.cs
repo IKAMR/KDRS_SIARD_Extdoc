@@ -42,7 +42,6 @@ namespace KDRS_SIARD_Extdoc
 
         }
         //--------------------------------------------------------------------------------
-
         private void btnChooseInPath_Click(object sender, EventArgs e)
         {
             DialogResult dr = openFileDialog1.ShowDialog();
@@ -50,7 +49,6 @@ namespace KDRS_SIARD_Extdoc
                 txtInFile.Text = openFileDialog1.FileName;
         }
         //--------------------------------------------------------------------------------
-
         private void btnChooseExtDoc_Click(object sender, EventArgs e)
         {
             DialogResult dr = folderBrowserDialog1.ShowDialog();
@@ -58,7 +56,6 @@ namespace KDRS_SIARD_Extdoc
                 txtExtDocFolder.Text = folderBrowserDialog1.SelectedPath;
         }
         //--------------------------------------------------------------------------------
-
         private void btnChooseOutFolder_Click(object sender, EventArgs e)
         {
             DialogResult dr = folderBrowserDialog1.ShowDialog();
@@ -103,6 +100,7 @@ namespace KDRS_SIARD_Extdoc
             }
         }
         //--------------------------------------------------------------------------------
+        // Validates that all mandatory textboxes are filled.
         private bool textBox_Validate()
         {
             foreach (TextBox tb in this.Controls.OfType<TextBox>().Where(x => x.CausesValidation == true))
@@ -138,7 +136,6 @@ namespace KDRS_SIARD_Extdoc
             }
         }
         //--------------------------------------------------------------------------------
-
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
@@ -162,7 +159,7 @@ namespace KDRS_SIARD_Extdoc
             }
             catch (IOException ex)
             {
-                throw ex; //new Exception("Files already exits in target folder");
+                throw ex;
             }
             catch (Exception ex)
             {
@@ -170,7 +167,7 @@ namespace KDRS_SIARD_Extdoc
             }
         }
         //--------------------------------------------------------------------------------
-
+        // Function to copy all files in document folder to new folder and create siard package with files included.
         private void DoTransform()
         {
             docFolder = txtExtDocFolder.Text;
@@ -205,18 +202,11 @@ namespace KDRS_SIARD_Extdoc
                     + targetDir);
             }
 
-            Console.WriteLine("Creating metadata.xml");
-
             CreateMetadataXML(lobFolder, "content", fileCount);
-
-            Console.WriteLine("Creating table.xml");
 
             CreateTableXML(tableFolderPath);
 
             backgroundWorker1.ReportProgress(2);
-
-            Console.WriteLine("Clob files: " + copiedClobFiles.Length);
-
 
             foreach (FileInfo file in copiedClobFiles)
             {
@@ -234,12 +224,9 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.Close();
 
             isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"), Properties.Settings.Default.Zip64JarPath);
-            Console.WriteLine("isZipped: " + isZipped);
-
-            Console.WriteLine("Job complete");
-
         }
         //--------------------------------------------------------------------------------
+        // Function to create siard package with path to external documents.
         public void MakeSiard()
         {
 
@@ -251,8 +238,6 @@ namespace KDRS_SIARD_Extdoc
             Uri outUri = new Uri(Path.Combine(outPath, @"siard\header"));
 
             Uri relativePath = outUri.MakeRelativeUri(docUri);
-            //Uri relPathParent = new Uri(relativePath, "..");
-            Console.WriteLine("Relpath: " + relativePath);
 
             int counter = 0;
 
@@ -271,7 +256,6 @@ namespace KDRS_SIARD_Extdoc
                     + sourceFolder);
             }
 
-
             Console.WriteLine("Creating metadata.xml");
 
             CreateMetadataXML(sourceFolder.Name, relativePath.ToString(), totalFileCount);
@@ -281,7 +265,6 @@ namespace KDRS_SIARD_Extdoc
             CreateTableXML(tableFolderPath);
 
             backgroundWorker1.ReportProgress(2);
-
 
             foreach (FileInfo file in clobFiles)
             {
@@ -299,7 +282,7 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
 
-            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "Ext_Doc_Int"), Properties.Settings.Default.Zip64JarPath);
+            isZipped = zipper.SiardZip(outPath + @"\siard", Path.Combine(outPath, "extdoc_" + GetDate(DateTime.Now)), Properties.Settings.Default.Zip64JarPath);
             Console.WriteLine("isZipped: " + isZipped);
 
             Console.WriteLine("Job complete");
@@ -311,6 +294,8 @@ namespace KDRS_SIARD_Extdoc
         {
             string headerPath = Path.Combine(outPath, @"siard\header");
             Directory.CreateDirectory(headerPath);
+
+            CopyFile("schema/metadata.xsd", headerPath);
 
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
             {
@@ -743,7 +728,12 @@ namespace KDRS_SIARD_Extdoc
                 IndentChars = "    "
             };
 
-            Directory.CreateDirectory(Directory.GetParent(lobFolderPath).ToString());
+            string tablePath = Directory.GetParent(lobFolderPath).ToString();
+
+            Directory.CreateDirectory(tablePath);
+
+            CopyFile("schema/table0.xsd", tablePath);
+
 
             Console.WriteLine("Creating table0 at: " + lobFolderPath);
             xmlWriter = XmlWriter.Create(Path.Combine(lobFolderPath, "table0.xml"), xmlWriterSettings);
@@ -832,7 +822,14 @@ namespace KDRS_SIARD_Extdoc
 
             return Path.Combine(this.GetParentName(dir.Parent.FullName, topParent), tempParent);
         }
+        //--------------------------------------------------------------------------------
+        private void CopyFile(string filePath, string targetFolder)
+        {
+            FileInfo fi = new FileInfo(filePath);
+            string fileName = fi.Name;
 
+            fi.CopyTo(Path.Combine(targetFolder, fileName), true);
+        }
         //-------------------------------------------------------------------------------
         private void DirectoryCopy(string sourceFolder, string targetPath)
         {
@@ -907,7 +904,7 @@ namespace KDRS_SIARD_Extdoc
     public static class Globals
     {
         public static readonly String toolName = "KDRS SIARD Extdoc";
-        public static readonly String toolVersion = "0.3";
+        public static readonly String toolVersion = "0.3.2";
     }
 
     //=======================================================================================
