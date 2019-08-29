@@ -603,7 +603,7 @@ namespace KDRS_SIARD_Extdoc
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("lobFolder");
-            xmlWriter.WriteString(lobFolder);
+            xmlWriter.WriteString("");
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteStartElement("type");
